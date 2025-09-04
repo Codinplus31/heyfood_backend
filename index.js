@@ -99,7 +99,24 @@ app.get("/tags", async (req, res) => {
     res.status(500).json({ error: "Database error" });
   }
 });
+// Drop tables route (GET)
+app.get("/drop-tables", async (req, res) => {
+  const secret = req.query.secret;
 
+  // Simple safety check
+  if (secret !== "12345") {
+    return res.status(403).json({ error: "❌ Forbidden: Invalid secret key" });
+  }
+
+  try {
+    await pool.query("DROP TABLE IF EXISTS restaurant;");
+    await pool.query("DROP TABLE IF EXISTS tag;");
+    res.json({ message: "✅ Tables 'restaurant' and 'tag' dropped successfully!" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "❌ Error dropping tables" });
+  }
+});
 // Start server
 
 
