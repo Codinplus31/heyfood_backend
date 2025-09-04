@@ -1,10 +1,8 @@
-// server.js
 const express = require("express");
 const cors = require("cors");
-
-
 const { Pool } = require("pg");
-require("dotenv").config()
+require("dotenv").config();
+
 const app = express();
 app.use(cors());
 app.use(express.json());
@@ -12,22 +10,24 @@ app.use(express.json());
 // PostgreSQL connection string
 const pool = new Pool({
   connectionString: process.env.db,
-//ssl: { rejectUnauthorized: false }
+  // ssl: { rejectUnauthorized: false }, // Uncomment if Supabase requires SSL
 });
+
+// Check DB connection
 async function checkDBConnection() {
   let client;
   try {
-    client = await pool.connect(); // Try to connect
+    client = await pool.connect();
     console.log("✅ Database connection successful!");
   } catch (err) {
-    console.error("❌ Failed to connect to database:", err);
+    console.error("❌ Failed to connect to database:", err.message);
+    process.exit(1); // stop the server if DB isn't connected
   } finally {
-    if (client) client.release(); // Release the client back to the pool
+    if (client) client.release();
   }
 }
 
-
-// Function to initialize tables and insert demo data
+// Initialize tables + demo data
 async function initializeDB() {
   try {
     // Create tag table
@@ -39,7 +39,7 @@ async function initializeDB() {
       );
     `);
 
-    // Insert demo data into tag table if empty
+    // Insert demo data if empty
     const tagCount = await pool.query("SELECT COUNT(*) FROM tag;");
     if (parseInt(tagCount.rows[0].count) === 0) {
       await pool.query(`
@@ -68,7 +68,7 @@ async function initializeDB() {
       );
     `);
 
-    // Insert demo data into restaurant table if empty
+    // Insert demo data if empty
     const restaurantCount = await pool.query("SELECT COUNT(*) FROM restaurant;");
     if (parseInt(restaurantCount.rows[0].count) === 0) {
       await pool.query(`
@@ -80,35 +80,16 @@ async function initializeDB() {
       console.log("✅ Demo data inserted into restaurant table");
     }
 
+    console.log("✅ Database initialized successfully!");
   } catch (err) {
-    console.error("❌ Error initializing DB:", err);
+    console.error("❌ Error initializing DB:", err.message);
   }
 }
 
-// Initialize DB on server start
-/*(async () => {
-  try {
-    await checkDBConnection();
-    await initializeDB();
-    console.log("✅ Database initialized successfully");
-  } catch (err) {
-    console.error("❌ Failed to initialize DB:", err);
-  }
-})();*/
+// --------- ROUTES ----------
 
-// Basic routes
+// Root
 app.get("/", (req, res) => {
-  
-  (async () => {
-  try {
-    await checkDBConnection();
-    await initializeDB();
-    console.log("✅ Database initialized successfully");
-  } catch (err) {
-    console.error("❌ Failed to initialize DB:", err);
-  }
-})();
-  
   res.json({ message: "Express + PostgreSQL with demo data!" });
 });
 
@@ -133,10 +114,10 @@ app.get("/tags", async (req, res) => {
     res.status(500).json({ error: "Database error" });
   }
 });
-// Drop tables route (GET)
+
+// Drop tables
 app.get("/drop-tables", async (req, res) => {
   const secret = req.query.secret;
-
   if (secret !== "12345") {
     return res.status(403).json({ error: "❌ Forbidden: Invalid secret key" });
   }
@@ -144,17 +125,21 @@ app.get("/drop-tables", async (req, res) => {
   try {
     await pool.query("DROP TABLE IF EXISTS restaurant CASCADE;");
     await pool.query("DROP TABLE IF EXISTS tag CASCADE;");
-    res.json({ message: "✅ Tables 'restaurant' and 'tag' dropped successfully!" });
+    res.json({ message: "✅ Tables dropped successfully!" });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "❌ Error dropping tables" });
   }
 });
-// Start server
 
+// --------- SERVER STARTUP ----------
 
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-  
-  console.log(`🚀 Server running at http://localhost:${PORT}`);
-});
+
+(async () => {
+  await checkDBConnection();  // check DB first
+  await initializeDB();       // initialize tables + demo data
+  app.listen(PORT, () => {
+    console.log(`🚀 Server running at http://localhost:${PORT}`);
+  });
+})();
