@@ -85,7 +85,7 @@ async function initializeDB() {
 }
 
 // Initialize DB on server start
-(async () => {
+/*(async () => {
   try {
     await checkDBConnection();
     await initializeDB();
@@ -93,7 +93,7 @@ async function initializeDB() {
   } catch (err) {
     console.error("❌ Failed to initialize DB:", err);
   }
-})();
+})();*/
 
 // Basic routes
 app.get("/", (req, res) => {
@@ -136,14 +136,13 @@ app.get("/tags", async (req, res) => {
 app.get("/drop-tables", async (req, res) => {
   const secret = req.query.secret;
 
-  // Simple safety check
   if (secret !== "12345") {
     return res.status(403).json({ error: "❌ Forbidden: Invalid secret key" });
   }
 
   try {
-    await pool.query("DROP TABLE IF EXISTS restaurant;");
-    await pool.query("DROP TABLE IF EXISTS tag;");
+    await pool.query("DROP TABLE IF EXISTS restaurant CASCADE;");
+    await pool.query("DROP TABLE IF EXISTS tag CASCADE;");
     res.json({ message: "✅ Tables 'restaurant' and 'tag' dropped successfully!" });
   } catch (err) {
     console.error(err);
