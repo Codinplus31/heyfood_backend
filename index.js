@@ -1,13 +1,14 @@
 const express = require("express");
 const cors = require("cors");
 const { Pool } = require("pg");
+const path = require("path");
 require("dotenv").config();
 
 
 const app = express();
 app.use(cors());
 app.use(express.json());
-
+app.use("/tag", express.static(path.join(__dirname, "public/tag")));
 // PostgreSQL connection string
 const pool = new Pool({
   connectionString: process.env.db,
