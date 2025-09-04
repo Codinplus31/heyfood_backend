@@ -76,37 +76,35 @@ async function initializeDB() {
       );
     `);
 
-    // Insert demo data only if empty
-    const restaurantCount = await pool.query("SELECT COUNT(*) FROM restaurant;");
-    if (parseInt(restaurantCount.rows[0].count) === 0) {
-      for (const r of restaurantDemoData) {
-        const tagIds = [];
-        if (Array.isArray(r.tag)) {
-          for (const t of r.tag) {
-            const tagId = await getOrCreateTag(t.trim()); // ✅ check or insert
-            tagIds.push(tagId);
-          }
+    // 🔥 Always insert demo data (for testing)
+    for (const r of restaurantDemoData) {
+      const tagIds = [];
+      if (Array.isArray(r.tag)) {
+        for (const t of r.tag) {
+          const tagId = await getOrCreateTag(t.trim());
+          tagIds.push(tagId);
         }
-
-        await pool.query(
-          `INSERT INTO restaurant 
-           (name, tag, stars, rating, img, open_time, close_time, discount, tag_id, genre) 
-           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10);`,
-          [
-            r.name,
-            JSON.stringify(r.tag || []),
-            r.stars,
-            r.rating,
-            r.img,
-            r.open_time,
-            r.close_time,
-            r.discount,
-            JSON.stringify(tagIds),
-            r.genre ? JSON.stringify(r.genre) : null
-          ]
-        );
       }
-      console.log("✅ Demo data inserted with tag_id mapping");
+
+      const inserted = await pool.query(
+        `INSERT INTO restaurant 
+         (name, tag, stars, rating, img, open_time, close_time, discount, tag_id, genre) 
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+         RETURNING id;`,
+        [
+          r.name,
+          JSON.stringify(r.tag || []),
+          r.stars,
+          r.rating,
+          r.img,
+          r.open_time,
+          r.close_time,
+          r.discount,
+          JSON.stringify(tagIds),
+          r.genre ? JSON.stringify(r.genre) : null
+        ]
+      );
+      console.log(`✅ Inserted restaurant: ${r.name} (id: ${inserted.rows[0].id})`);
     }
   } catch (err) {
     console.error("❌ Error initializing DB:", err);
