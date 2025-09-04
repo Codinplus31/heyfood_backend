@@ -12,7 +12,17 @@ const pool = new Pool({
   connectionString: "postgresql://postgres.ilnnyzpxwzyenvfecotq:regis.1@aws-1-eu-north-1.pooler.supabase.com:6543/postgres",
 //ssl: { rejectUnauthorized: false }
 });
+async function testDBConnection() {
+  try {
+    // Try a simple query to verify connection
+    await pool.query("SELECT 1");
+    console.log("✅ Database connection successful!");
+  } catch (err) {
+    console.error("❌ Database connection failed:", err);
+  }
+}
 
+testDBConnection();
 // Function to initialize tables and insert demo data
 async function initializeDB() {
   try {
