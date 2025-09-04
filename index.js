@@ -82,6 +82,14 @@ async function initializeDB() {
 
 // Basic routes
 app.get("/", (req, res) => {
+  (async () => {
+  try {
+    await initializeDB();
+    console.log("✅ Database initialized successfully");
+  } catch (err) {
+    console.error("❌ Failed to initialize DB:", err);
+  }
+})();
   res.json({ message: "Express + PostgreSQL with demo data!" });
 });
 
