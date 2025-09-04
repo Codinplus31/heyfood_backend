@@ -24,7 +24,7 @@ async function checkDBConnection() {
   }
 }
 
-checkDBConnection();
+
 // Function to initialize tables and insert demo data
 async function initializeDB() {
   try {
@@ -95,6 +95,7 @@ async function initializeDB() {
 
 // Basic routes
 app.get("/", (req, res) => {
+  checkDBConnection()
   (async () => {
   try {
     await initializeDB();
@@ -103,6 +104,7 @@ app.get("/", (req, res) => {
     console.error("❌ Failed to initialize DB:", err);
   }
 })();
+  
   res.json({ message: "Express + PostgreSQL with demo data!" });
 });
 
