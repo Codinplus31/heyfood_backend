@@ -46,6 +46,15 @@ async function getOrCreateTag(tagName) {
   }
 }
 
+function formatTime(isoString) {
+  if (!isoString) return null;
+  const d = new Date(isoString);
+  const hours = String(d.getUTCHours()).padStart(2, "0");
+  const minutes = String(d.getUTCMinutes()).padStart(2, "0");
+  const seconds = String(d.getUTCSeconds()).padStart(2, "0");
+  return `${hours}:${minutes}:${seconds}`;
+}
+
 // --- Initialize DB ---
 async function initializeDB() {
   try {
@@ -91,17 +100,17 @@ async function initializeDB() {
          VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
          RETURNING id;`,
         [
-          r.name,
-          JSON.stringify(r.tag || []),
-          r.stars,
-          r.rating,
-          r.img,
-          r.open_time,
-          r.close_time,
-          r.discount,
-          JSON.stringify(tagIds),
-          r.genre ? JSON.stringify(r.genre) : null
-        ]
+    r.name,
+    JSON.stringify(r.tag || []),
+    r.stars,
+    r.rating,
+    r.img,
+    formatTime(r.open_time),   // ✅ convert to HH:MM:SS
+    formatTime(r.close_time),  // ✅ convert to HH:MM:SS
+    r.discount,
+    JSON.stringify(tagIds),
+    r.genre ? JSON.stringify(r.genre) : null
+  ]
       );
       console.log(`✅ Inserted restaurant: ${r.name} (id: ${inserted.rows[0].id})`);
     }
