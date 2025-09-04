@@ -86,6 +86,7 @@ async function initializeDB() {
 // Initialize DB on server start
 (async () => {
   try {
+    
     await initializeDB();
     console.log("✅ Database initialized successfully");
   } catch (err) {
@@ -95,9 +96,10 @@ async function initializeDB() {
 
 // Basic routes
 app.get("/", (req, res) => {
-  checkDBConnection()
+  
   (async () => {
   try {
+    await checkDBConnection();
     await initializeDB();
     console.log("✅ Database initialized successfully");
   } catch (err) {
