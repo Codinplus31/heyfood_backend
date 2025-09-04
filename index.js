@@ -87,7 +87,7 @@ async function initializeDB() {
 // Initialize DB on server start
 (async () => {
   try {
-    
+    await checkDBConnection();
     await initializeDB();
     console.log("✅ Database initialized successfully");
   } catch (err) {
