@@ -71,7 +71,14 @@ async function initializeDB() {
 }
 
 // Initialize DB on server start
-initializeDB();
+(async () => {
+  try {
+    await initializeDB();
+    console.log("✅ Database initialized successfully");
+  } catch (err) {
+    console.error("❌ Failed to initialize DB:", err);
+  }
+})();
 
 // Basic routes
 app.get("/", (req, res) => {
@@ -122,5 +129,13 @@ app.get("/drop-tables", async (req, res) => {
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
+  (async () => {
+  try {
+    await initializeDB();
+    console.log("✅ Database initialized successfully");
+  } catch (err) {
+    console.error("❌ Failed to initialize DB:", err);
+  }
+})();
   console.log(`🚀 Server running at http://localhost:${PORT}`);
 });
