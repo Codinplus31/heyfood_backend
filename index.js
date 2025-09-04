@@ -8,7 +8,7 @@ require("dotenv").config();
 const app = express();
 app.use(cors());
 app.use(express.json());
-app.use("/tag", express.static(path.join(__dirname, "public/tag")));
+app.use(express.static(path.join(__dirname, "public/tag")));
 // PostgreSQL connection string
 const pool = new Pool({
   connectionString: process.env.db,
