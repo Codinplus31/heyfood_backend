@@ -9,7 +9,7 @@ app.use(express.json());
 
 // PostgreSQL connection string
 const pool = new Pool({
-  connectionString: "postgresql://postgres.ilnnyzpxwzyenvfecotq:regis.1@aws-1-eu-north-1.pooler.supabase.com:6543/postgres",
+  connectionString: "postgresql://postgres:regis.1@db.ilnnyzpxwzyenvfecotq.supabase.co:5432/postgres",
 });
 
 // Function to initialize tables and insert demo data
