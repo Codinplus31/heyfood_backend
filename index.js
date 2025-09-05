@@ -101,7 +101,8 @@ async function initializeDB() {
         close_time TIME,
         discount VARCHAR(50),
         tag_id JSON,
-        genre JSON
+        genre JSON,
+        created_at TIMESTAMP DEFAULT NOW()
       );
     `);
 
