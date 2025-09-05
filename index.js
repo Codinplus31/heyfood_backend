@@ -2,6 +2,7 @@ const express = require("express");
 const cors = require("cors");
 const { Pool } = require("pg");
 const path = require("path");
+const restaurantTags = require("./tags.json");
 require("dotenv").config();
 
 
@@ -15,41 +16,6 @@ const pool = new Pool({
   // ssl: { rejectUnauthorized: false }, // Uncomment if Supabase requires SSL
 });
 
-const restaurantTags = [
-  { label: "Rice", icon: "/tags/rice.svg" },
-  { label: "Chicken", icon: "/tags/chicken.svg" },
-  { label: "Shawarma", icon: "/tags/shawarma.svg" },
-  { label: "Juice", icon: "/tags/juice.svg" },
-  { label: "Goat Meat", icon: "/tags/goatmeat.svg" },
-  { label: "Fast Food", icon: "/tags/fastfood.svg" },
-  { label: "Amala", icon: "/tags/amala.svg" },
-  { label: "Soup Bowl", icon: "/tags/soupbowl.svg" },
-  { label: "Turkey", icon: "/tags/turkey.svg" },
-  { label: "Grills", icon: "/tags/grills.svg" },
-  { label: "Grocery", icon: "/tags/grocery.svg" },
-  { label: "Doughnuts", icon: "/tags/doughnut.svg" },
-  { label: "Smothies", icon: "/tags/smothies.svg" },
-  { label: "Vegetable", icon: "/tags/vegetable.svg" },
-  { label: "Ice Cream", icon: "/tags/icecream.svg" },
-  { label: "Pizza", icon: "/tags/pizza.svg" },
-  { label: "Native Corner", icon: "/tags/nativecorner.svg" },
-  { label: "SandWish", icon: "/tags/sandwish.svg" },
-  { label: "Snacks", icon: "/tags/snacks.svg" },
-  { label: "Burger", icon: "/tags/burger.svg" },
-  { label: "Parfait", icon: "/tags/parfait.svg" },
-  { label: "Chinese", icon: "/tags/chinese.svg" },
-  { label: "Ewa Agoyin", icon: "/tags/ewaagoyin.svg" },
-  { label: "Pastries", icon: "/tags/pastries.svg" },
-  { label: "Cup Cakes", icon: "/tags/cupcake.svg" },
-  { label: "Salad", icon: "/tags/salad.svg" },
-  { label: "Small Chops", icon: "/tags/smallchops.svg" },
-  { label: "Sea food", icon: "/tags/seafood.svg" },
-  { label: "Peppersoup", icon: "/tags/peppersoup.svg" },
-  { label: "fries", icon: "/tags/fries.svg" },
-  { label: "Smoothies", icon: "/tags/smoothes.svg" },
-  { label: "Yoghurt", icon: "/tags/yohurt.svg" },
-  { label: "Abacha", icon: "/tags/abacha.svg" }
-];
 
 // Check DB connection
 async function checkDBConnection() {
