@@ -5,6 +5,7 @@ const path = require("path");
 const restaurantTags = require("./tag.json");
 const restaurantDemoData = require("./restaurant.json");
 //require("dotenv").config();
+const serverless = require("serverless-http");
 
 
 
@@ -216,7 +217,8 @@ const PORT = process.env.PORT || 5000;
 (async () => {
   await checkDBConnection();  // check DB first
   await initializeDB();       // initialize tables + demo data
-  app.listen(PORT, () => {
-    console.log(`🚀 Server running at http://localhost:${PORT}`);
-  });
+ // app.listen(PORT, () => {
+  //  console.log(`🚀 Server running at http://localhost:${PORT}`);
+ // });
 })();
+module.exports = serverless(app);
