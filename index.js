@@ -114,17 +114,20 @@ async function initializeDB() {
       );
     `);
 
-    // --- Insert tags from tag.json only if they don't exist ---
+    // --- Insert tags from JSON only if they don't exist ---
     for (const tag of restaurantTags) {
-      const normalized = normalizeTag(tag.name);
-      const exists = await pool.query("SELECT id FROM tag WHERE LOWER(name) = $1", [normalized]);
+      const exists = await pool.query("SELECT id FROM tag WHERE name = $1", [tag.name]);
       if (exists.rows.length === 0) {
-        await pool.query(
-          "INSERT INTO tag (name, img) VALUES ($1, $2)",
-          [tag.name.trim(), tag.icon]
-        );
-        console.log(`✅ Inserted tag: ${tag.name.trim()}`);
+        await pool.query("INSERT INTO tag (name, img) VALUES ($1, $2)", [tag.name, tag.icon]);
+        console.log(`✅ Inserted tag: ${tag.name}`);
       }
+    }
+
+    // --- Fetch all tags from DB to map names to ids ---
+    const tagRows = await pool.query("SELECT id, name FROM tag");
+    const tagMap = {};
+    for (const t of tagRows.rows) {
+      tagMap[t.name.trim()] = t.id;
     }
 
     // --- Insert restaurant demo data only if table is empty ---
@@ -133,11 +136,9 @@ async function initializeDB() {
       for (const r of restaurantDemoData) {
         const tagIds = [];
         if (Array.isArray(r.tag)) {
-          for (let t of r.tag) {
-            if (!t) continue;
-            t = t.trim();
-            const tagId = await getOrCreateTagId(t);
-            tagIds.push(tagId);
+          for (const t of r.tag) {
+            const trimmed = t.trim();
+            if (tagMap[trimmed]) tagIds.push(tagMap[trimmed]);
           }
         }
 
@@ -146,11 +147,11 @@ async function initializeDB() {
            (name, tag, stars, rating, img, open_time, close_time, discount, tag_id, genre) 
            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)`,
           [
-            r.name.trim(),
-            JSON.stringify(r.tag.map(t => t.trim())),
+            r.name,
+            JSON.stringify(r.tag || []),
             r.stars,
             r.rating,
-            r.img ? r.img.trim() : null,
+            r.img,
             formatTime(r.open_time),
             formatTime(r.close_time),
             r.discount,
@@ -158,7 +159,7 @@ async function initializeDB() {
             r.genre ? JSON.stringify(r.genre) : null
           ]
         );
-        console.log(`✅ Inserted restaurant: ${r.name.trim()}`);
+        console.log(`✅ Inserted restaurant: ${r.name}`);
       }
     }
 
