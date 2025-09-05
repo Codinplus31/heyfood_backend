@@ -78,6 +78,7 @@ function formatTime(isoString) {
 }
 
 // --- Initialize DB ---
+
 async function initializeDB() {
   try {
     // --- Create tables ---
@@ -106,22 +107,24 @@ async function initializeDB() {
       );
     `);
 
-    // --- Insert tags from JSON only if they don't exist ---
+    // --- Insert tags from tag.json only if they don't exist ---
     for (const tag of restaurantTags) {
-      // Check if the tag already exists
-      const exists = await pool.query("SELECT id FROM tag WHERE name = $1", [tag.label]);
+      const exists = await pool.query("SELECT id FROM tag WHERE name = $1", [tag.name]);
       if (exists.rows.length === 0) {
         await pool.query(
           "INSERT INTO tag (name, img) VALUES ($1, $2)",
-          [tag.name, tag.img]
+          [tag.name, tag.img]   // ✅ corrected to match your JSON keys
         );
-        console.log(`✅ Inserted tag: ${tag.label}`);
+        console.log(`✅ Inserted tag: ${tag.name}`);
       }
     }
 
     // --- Insert restaurant demo data only if table is empty ---
     const restaurantCount = await pool.query("SELECT COUNT(*) FROM restaurant");
+    console.log("🍽 Restaurant count:", restaurantCount.rows[0].count);
+
     if (parseInt(restaurantCount.rows[0].count) === 0) {
+      console.log("➡️ Inserting demo restaurants...");
       for (const r of restaurantDemoData) {
         const tagIds = [];
         if (Array.isArray(r.tag)) {
@@ -150,6 +153,8 @@ async function initializeDB() {
         );
         console.log(`✅ Inserted restaurant: ${r.name}`);
       }
+    } else {
+      console.log("⚠️ Restaurant table already has data, skipping insert.");
     }
 
     console.log("✅ DB initialization complete.");
