@@ -222,6 +222,22 @@ app.get("/drop-tables", async (req, res) => {
   }
 });
 
+// GET /data - fetch tags and restaurants
+app.get("/data", async (req, res) => {
+  try {
+    const tagsResult = await pool.query("SELECT * FROM tag ORDER BY id ASC");
+    const restaurantsResult = await pool.query("SELECT * FROM restaurant ORDER BY id ASC");
+
+    res.json({
+      tags: tagsResult.rows,
+      restaurants: restaurantsResult.rows,
+    });
+  } catch (err) {
+    console.error("❌ Error fetching data:", err);
+    res.status(500).json({ error: "Database error" });
+  }
+});
+  
 // --------- SERVER STARTUP ----------
 
 const PORT = process.env.PORT || 5000;
