@@ -118,16 +118,19 @@ async function initializeDB() {
     for (const tag of restaurantTags) {
       const exists = await pool.query("SELECT id FROM tag WHERE name = $1", [tag.name]);
       if (exists.rows.length === 0) {
-        await pool.query("INSERT INTO tag (name, img) VALUES ($1, $2)", [tag.name, tag.img]);
+        await pool.query(
+          "INSERT INTO tag (name, img) VALUES ($1, $2)",
+          [tag.name, tag.icon]
+        );
         console.log(`✅ Inserted tag: ${tag.name}`);
       }
     }
 
-    // --- Fetch all tags from DB to map names to ids ---
+    // Build a tag map for fast lookup
     const tagRows = await pool.query("SELECT id, name FROM tag");
     const tagMap = {};
     for (const t of tagRows.rows) {
-      tagMap[t.name.trim()] = t.id;
+      tagMap[t.name.trim().toLowerCase()] = t.id;
     }
 
     // --- Insert restaurant demo data only if table is empty ---
@@ -137,7 +140,7 @@ async function initializeDB() {
         const tagIds = [];
         if (Array.isArray(r.tag)) {
           for (const t of r.tag) {
-            const trimmed = t.trim();
+            const trimmed = t.trim().toLowerCase();
             if (tagMap[trimmed]) tagIds.push(tagMap[trimmed]);
           }
         }
@@ -168,6 +171,7 @@ async function initializeDB() {
     console.error("❌ Error initializing DB:", err);
   }
 }
+
 // --------- ROUTES ----------
 
 // Root
