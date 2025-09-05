@@ -118,7 +118,7 @@ async function initializeDB() {
     for (const tag of restaurantTags) {
       const exists = await pool.query("SELECT id FROM tag WHERE name = $1", [tag.name]);
       if (exists.rows.length === 0) {
-        await pool.query("INSERT INTO tag (name, img) VALUES ($1, $2)", [tag.name, tag.icon]);
+        await pool.query("INSERT INTO tag (name, img) VALUES ($1, $2)", [tag.name, tag.img]);
         console.log(`✅ Inserted tag: ${tag.name}`);
       }
     }
