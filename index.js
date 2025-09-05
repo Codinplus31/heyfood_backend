@@ -121,6 +121,58 @@ async function initializeDB() {
   }
 }
 
+app.get("/insert-demo-data", async (req, res) => {
+  try {
+    // Fetch all tags from the table to get their IDs
+    const tagResult = await pool.query("SELECT * FROM tag");
+    const tagMap = {};
+    for (const t of tagResult.rows) {
+      tagMap[t.name.trim().toLowerCase()] = t.id;
+    }
+
+    // Insert restaurants
+    let insertedCount = 0;
+    for (const r of restaurantDemoData) {
+      // Skip if restaurant already exists (optional)
+      const exists = await pool.query("SELECT id FROM restaurant WHERE name = $1", [r.name]);
+      if (exists.rows.length > 0) continue;
+
+      // Map tags to tag_ids
+      const tagIds = [];
+      if (Array.isArray(r.tag)) {
+        for (const t of r.tag) {
+          const key = t.trim().toLowerCase();
+          if (tagMap[key]) tagIds.push(tagMap[key]);
+        }
+      }
+
+      await pool.query(
+        `INSERT INTO restaurant 
+         (name, tag, stars, rating, img, open_time, close_time, discount, tag_id, genre)
+         VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)`,
+        [
+          r.name,
+          JSON.stringify(r.tag || []),
+          r.stars,
+          r.rating,
+          r.img,
+          formatTime(r.open_time),
+          formatTime(r.close_time),
+          r.discount,
+          JSON.stringify(tagIds),
+          r.genre ? JSON.stringify(r.genre) : null
+        ]
+      );
+      insertedCount++;
+    }
+
+    res.status(200).json({ message: `✅ Inserted ${insertedCount} restaurants successfully!` });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "❌ Error inserting demo data", error: err.message });
+  }
+});
+
 // Routes
 app.get("/", (req, res) => {
   res.json({ message: "Express + PostgreSQL with demo data!" });
