@@ -1,35 +1,172 @@
 [
-  { "label": "Rice", "icon": "/tags/rice.svg" },
-  { "label": "Chicken", "icon": "/tags/chicken.svg" },
-  { "label": "Shawarma", "icon": "/tags/shawarma.svg" },
-  { "label": "Juice", "icon": "/tags/juice.svg" },
-  { "label": "Goat Meat", "icon": "/tags/goatmeat.svg" },
-  { "label": "Fast Food", "icon": "/tags/fastfood.svg" },
-  { "label": "Amala", "icon": "/tags/amala.svg" },
-  { "label": "Soup Bowl", "icon": "/tags/soupbowl.svg" },
-  { "label": "Turkey", "icon": "/tags/turkey.svg" },
-  { "label": "Grills", "icon": "/tags/grills.svg" },
-  { "label": "Grocery", "icon": "/tags/grocery.svg" },
-  { "label": "Doughnuts", "icon": "/tags/doughnut.svg" },
-  { "label": "Smothies", "icon": "/tags/smothies.svg" },
-  { "label": "Vegetable", "icon": "/tags/vegetable.svg" },
-  { "label": "Ice Cream", "icon": "/tags/icecream.svg" },
-  { "label": "Pizza", "icon": "/tags/pizza.svg" },
-  { "label": "Native Corner", "icon": "/tags/nativecorner.svg" },
-  { "label": "SandWish", "icon": "/tags/sandwish.svg" },
-  { "label": "Snacks", "icon": "/tags/snacks.svg" },
-  { "label": "Burger", "icon": "/tags/burger.svg" },
-  { "label": "Parfait", "icon": "/tags/parfait.svg" },
-  { "label": "Chinese", "icon": "/tags/chinese.svg" },
-  { "label": "Ewa Agoyin", "icon": "/tags/ewaagoyin.svg" },
-  { "label": "Pastries", "icon": "/tags/pastries.svg" },
-  { "label": "Cup Cakes", "icon": "/tags/cupcake.svg" },
-  { "label": "Salad", "icon": "/tags/salad.svg" },
-  { "label": "Small Chops", "icon": "/tags/smallchops.svg" },
-  { "label": "Sea food", "icon": "/tags/seafood.svg" },
-  { "label": "Peppersoup", "icon": "/tags/peppersoup.svg" },
-  { "label": "fries", "icon": "/tags/fries.svg" },
-  { "label": "Smoothies", "icon": "/tags/smoothes.svg" },
-  { "label": "Yoghurt", "icon": "/tags/yohurt.svg" },
-  { "label": "Abacha", "icon": "/tags/abacha.svg" }
-]
+    {
+      "id": 1,
+      "name": "Rice",
+      "img": "/tags/rice.svg"
+    },
+    {
+      "id": 2,
+      "name": "Chicken",
+      "img": "/tags/chicken.svg"
+    },
+    {
+      "id": 3,
+      "name": "Shawarma",
+      "img": "/tags/shawarma.svg"
+    },
+    {
+      "id": 4,
+      "name": "Juice",
+      "img": "/tags/juice.svg"
+    },
+    {
+      "id": 5,
+      "name": "Goat Meat",
+      "img": "/tags/goatmeat.svg"
+    },
+    {
+      "id": 6,
+      "name": "Fast Food",
+      "img": "/tags/fastfood.svg"
+    },
+    {
+      "id": 7,
+      "name": "Amala",
+      "img": "/tags/amala.svg"
+    },
+    {
+      "id": 8,
+      "name": "Soup Bowl",
+      "img": "/tags/soupbowl.svg"
+    },
+    {
+      "id": 9,
+      "name": "Turkey",
+      "img": "/tags/turkey.svg"
+    },
+    {
+      "id": 10,
+      "name": "Grills",
+      "img": "/tags/grills.svg"
+    },
+    {
+      "id": 11,
+      "name": "Grocery",
+      "img": "/tags/grocery.svg"
+    },
+    {
+      "id": 12,
+      "name": "Doughnuts",
+      "img": "/tags/doughnut.svg"
+    },
+    {
+      "id": 13,
+      "name": "Smothies",
+      "img": "/tags/smothies.svg"
+    },
+    {
+      "id": 14,
+      "name": "Vegetable",
+      "img": "/tags/vegetable.svg"
+    },
+    {
+      "id": 15,
+      "name": "Ice Cream",
+      "img": "/tags/icecream.svg"
+    },
+    {
+      "id": 16,
+      "name": "Pizza",
+      "img": "/tags/pizza.svg"
+    },
+    {
+      "id": 17,
+      "name": "Native Corner",
+      "img": "/tags/nativecorner.svg"
+    },
+    {
+      "id": 18,
+      "name": "SandWish",
+      "img": "/tags/sandwish.svg"
+    },
+    {
+      "id": 19,
+      "name": "Snacks",
+      "img": "/tags/snacks.svg"
+    },
+    {
+      "id": 20,
+      "name": "Burger",
+      "img": "/tags/burger.svg"
+    },
+    {
+      "id": 21,
+      "name": "Parfait",
+      "img": "/tags/parfait.svg"
+    },
+    {
+      "id": 22,
+      "name": "Chinese",
+      "img": "/tags/chinese.svg"
+    },
+    {
+      "id": 23,
+      "name": "Ewa Agoyin",
+      "img": "/tags/ewaagoyin.svg"
+    },
+    {
+      "id": 24,
+      "name": "Pastries",
+      "img": "/tags/pastries.svg"
+    },
+    {
+      "id": 25,
+      "name": "Cup Cakes",
+      "img": "/tags/cupcake.svg"
+    },
+    {
+      "id": 26,
+      "name": "Salad",
+      "img": "/tags/salad.svg"
+    },
+    {
+      "id": 27,
+      "name": "Small Chops",
+      "img": "/tags/smallchops.svg"
+    },
+    {
+      "id": 28,
+      "name": "Sea food",
+      "img": "/tags/seafood.svg"
+    },
+    {
+      "id": 29,
+      "name": "Peppersoup",
+      "img": "/tags/peppersoup.svg"
+    },
+    {
+      "id": 30,
+      "name": "fries",
+      "img": "/tags/fries.svg"
+    },
+    {
+      "id": 31,
+      "name": "Smoothies",
+      "img": "/tags/smoothes.svg"
+    },
+    {
+      "id": 32,
+      "name": "Yoghurt",
+      "img": "/tags/yohurt.svg"
+    },
+    {
+      "id": 33,
+      "name": "Abacha",
+      "img": "/tags/abacha.svg"
+    },
+    {
+      "id": 34,
+      "name": "Native corner",
+      "img": "/tags/nativecorner.svg"
+    }
+  ]
