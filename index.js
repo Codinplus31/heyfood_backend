@@ -82,7 +82,7 @@ function formatTime(isoString) {
 // --- Initialize DB ---
 async function initializeDB() {
   try {
-    // Create tag table
+    // --- Create tables ---
     await pool.query(`
       CREATE TABLE IF NOT EXISTS tag (
         id SERIAL PRIMARY KEY,
@@ -91,7 +91,6 @@ async function initializeDB() {
       );
     `);
 
-    // Create restaurant table
     await pool.query(`
       CREATE TABLE IF NOT EXISTS restaurant (
         id SERIAL PRIMARY KEY,
@@ -108,45 +107,57 @@ async function initializeDB() {
       );
     `);
 
-for (const tag of restaurantTags) {
-      await getOrCreateTag(tag.label, tag.icon);
-}
-    
-    // 🔥 Always insert demo data (for testing)
-    for (const r of restaurantDemoData) {
-      const tagIds = [];
-      if (Array.isArray(r.tag)) {
-        for (const t of r.tag) {
-          const tagId = await getOrCreateTagId(t.trim());
-          tagIds.push(tagId);
-        }
+    // --- Insert tags from JSON only if they don't exist ---
+    for (const tag of restaurantTags) {
+      // Check if the tag already exists
+      const exists = await pool.query("SELECT id FROM tag WHERE name = $1", [tag.label]);
+      if (exists.rows.length === 0) {
+        await pool.query(
+          "INSERT INTO tag (name, img) VALUES ($1, $2)",
+          [tag.label, tag.icon]
+        );
+        console.log(`✅ Inserted tag: ${tag.label}`);
       }
-
-      const inserted = await pool.query(
-        `INSERT INTO restaurant 
-         (name, tag, stars, rating, img, open_time, close_time, discount, tag_id, genre) 
-         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
-         RETURNING id;`,
-        [
-    r.name,
-    JSON.stringify(r.tag || []),
-    r.stars,
-    r.rating,
-    r.img,
-    formatTime(r.open_time),   // ✅ convert to HH:MM:SS
-    formatTime(r.close_time),  // ✅ convert to HH:MM:SS
-    r.discount,
-    JSON.stringify(tagIds),
-    r.genre ? JSON.stringify(r.genre) : null
-  ]
-      );
-      console.log(`✅ Inserted restaurant: ${r.name} (id: ${inserted.rows[0].id})`);
     }
+
+    // --- Insert restaurant demo data only if table is empty ---
+    const restaurantCount = await pool.query("SELECT COUNT(*) FROM restaurant");
+    if (parseInt(restaurantCount.rows[0].count) === 0) {
+      for (const r of restaurantDemoData) {
+        const tagIds = [];
+        if (Array.isArray(r.tag)) {
+          for (const t of r.tag) {
+            const tagId = await getOrCreateTagId(t.trim());
+            tagIds.push(tagId);
+          }
+        }
+
+        await pool.query(
+          `INSERT INTO restaurant 
+           (name, tag, stars, rating, img, open_time, close_time, discount, tag_id, genre) 
+           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)`,
+          [
+            r.name,
+            JSON.stringify(r.tag || []),
+            r.stars,
+            r.rating,
+            r.img,
+            formatTime(r.open_time),
+            formatTime(r.close_time),
+            r.discount,
+            JSON.stringify(tagIds),
+            r.genre ? JSON.stringify(r.genre) : null
+          ]
+        );
+        console.log(`✅ Inserted restaurant: ${r.name}`);
+      }
+    }
+
+    console.log("✅ DB initialization complete.");
   } catch (err) {
     console.error("❌ Error initializing DB:", err);
   }
 }
-
 // --------- ROUTES ----------
 
 // Root
