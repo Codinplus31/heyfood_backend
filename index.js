@@ -115,7 +115,7 @@ async function initializeDB() {
       if (exists.rows.length === 0) {
         await pool.query(
           "INSERT INTO tag (name, img) VALUES ($1, $2)",
-          [tag.label, tag.icon]
+          [tag.name, tag.img]
         );
         console.log(`✅ Inserted tag: ${tag.label}`);
       }
@@ -124,14 +124,14 @@ async function initializeDB() {
     // --- Insert restaurant demo data only if table is empty ---
     const restaurantCount = await pool.query("SELECT COUNT(*) FROM restaurant");
     if (parseInt(restaurantCount.rows[0].count) === 0) {
-      for (const r of restaurantDemoData) {
+     /* for (const r of restaurantDemoData) {
         const tagIds = [];
         if (Array.isArray(r.tag)) {
           for (const t of r.tag) {
             const tagId = await getOrCreateTagId(t.trim());
             tagIds.push(tagId);
           }
-        }
+        }*/
 
         await pool.query(
           `INSERT INTO restaurant 
