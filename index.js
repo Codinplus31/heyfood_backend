@@ -36,14 +36,18 @@ async function checkDBConnection() {
  
   
   async function getOrCreateTagId(tagName) {
+  const normalized = normalizeTag(tagName);
+
   try {
-    const existing = await pool.query("SELECT id FROM tag WHERE name = $1", [tagName]);
-    if (existing.rows.length > 0) {
-      return existing.rows[0].id;
-    }
+    const existing = await pool.query(
+      "SELECT id FROM tag WHERE LOWER(name) = $1",
+      [normalized]
+    );
+    if (existing.rows.length > 0) return existing.rows[0].id;
+
     const insert = await pool.query(
       "INSERT INTO tag (name, img) VALUES ($1, $2) RETURNING id",
-      [tagName, null]
+      [tagName.trim(), null]
     );
     return insert.rows[0].id;
   } catch (err) {
@@ -75,6 +79,9 @@ function formatTime(isoString) {
   const minutes = String(d.getUTCMinutes()).padStart(2, "0");
   const seconds = String(d.getUTCSeconds()).padStart(2, "0");
   return `${hours}:${minutes}:${seconds}`;
+}
+function normalizeTag(tagName) {
+  return tagName.trim().toLowerCase();
 }
 
 // --- Initialize DB ---
@@ -109,27 +116,27 @@ async function initializeDB() {
 
     // --- Insert tags from tag.json only if they don't exist ---
     for (const tag of restaurantTags) {
-      const exists = await pool.query("SELECT id FROM tag WHERE name = $1", [tag.name]);
+      const normalized = normalizeTag(tag.name);
+      const exists = await pool.query("SELECT id FROM tag WHERE LOWER(name) = $1", [normalized]);
       if (exists.rows.length === 0) {
         await pool.query(
           "INSERT INTO tag (name, img) VALUES ($1, $2)",
-          [tag.name, tag.img]   // ✅ corrected to match your JSON keys
+          [tag.name.trim(), tag.icon]
         );
-        console.log(`✅ Inserted tag: ${tag.name}`);
+        console.log(`✅ Inserted tag: ${tag.name.trim()}`);
       }
     }
 
     // --- Insert restaurant demo data only if table is empty ---
     const restaurantCount = await pool.query("SELECT COUNT(*) FROM restaurant");
-    console.log("🍽 Restaurant count:", restaurantCount.rows[0].count);
-
     if (parseInt(restaurantCount.rows[0].count) === 0) {
-      console.log("➡️ Inserting demo restaurants...");
       for (const r of restaurantDemoData) {
         const tagIds = [];
         if (Array.isArray(r.tag)) {
-          for (const t of r.tag) {
-            const tagId = await getOrCreateTagId(t.trim());
+          for (let t of r.tag) {
+            if (!t) continue;
+            t = t.trim();
+            const tagId = await getOrCreateTagId(t);
             tagIds.push(tagId);
           }
         }
@@ -139,11 +146,11 @@ async function initializeDB() {
            (name, tag, stars, rating, img, open_time, close_time, discount, tag_id, genre) 
            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)`,
           [
-            r.name,
-            JSON.stringify(r.tag || []),
+            r.name.trim(),
+            JSON.stringify(r.tag.map(t => t.trim())),
             r.stars,
             r.rating,
-            r.img,
+            r.img ? r.img.trim() : null,
             formatTime(r.open_time),
             formatTime(r.close_time),
             r.discount,
@@ -151,10 +158,8 @@ async function initializeDB() {
             r.genre ? JSON.stringify(r.genre) : null
           ]
         );
-        console.log(`✅ Inserted restaurant: ${r.name}`);
+        console.log(`✅ Inserted restaurant: ${r.name.trim()}`);
       }
-    } else {
-      console.log("⚠️ Restaurant table already has data, skipping insert.");
     }
 
     console.log("✅ DB initialization complete.");
