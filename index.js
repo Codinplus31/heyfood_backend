@@ -4,7 +4,7 @@ const { Pool } = require("pg");
 const path = require("path");
 const restaurantTags = require("./tag.json");
 const restaurantDemoData = require("./restaurant.json");
-require("dotenv").config();
+//require("dotenv").config();
 
 
 
