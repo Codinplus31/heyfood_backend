@@ -195,7 +195,7 @@ app.get("/data", async (req, res) => {
   try {
     const tagsResult = await pool.query("SELECT * FROM tag ORDER BY id ASC");
     const restaurantsResult = await pool.query("SELECT * FROM restaurant ORDER BY id ASC");
-    let banners = ["./banners/Frame 2664.png", "./banners/Frame 1572.png", "./banners/Frame 2684 (1).png", "./banners/Survey banner.png", "./banners/Frame 1599.png"]
+    let banners = ["/banners/Frame 2664.png", "/banners/Frame 1572.png", "/banners/Frame 2684 (1).png", "/banners/Survey banner.png", "/banners/Frame 1599.png"]
       
     res.json({
       tags: tagsResult.rows,
